@@ -1,0 +1,39 @@
+body {
+  background-color: #333;
+}
+
+
+path{
+  -webkit-transition: stroke-dashoffset 2s ease-in-out;
+  transition: stroke-dashoffset 2s ease-in-out;
+}
+
+#droparea {
+  padding: 20px;
+  background-color: #eee;
+}
+
+.container {
+  position: relative;
+  display: inline-block;
+}
+
+.container svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: auto;
+}
+
+.container img {
+  transition: opacity 1s ease-in-out;
+}
+
+#image {
+  display: none;
+}
+
+#canvas {
+  display: none;
+}

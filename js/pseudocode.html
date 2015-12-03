@@ -1,0 +1,28 @@
+findContours() {
+  go trough image pixels
+    threshold pixels 
+    if prevValue == backgroundColor && currentValue == foregroundColor && currentPoint is not in contourData
+        followContour(currentPoint)
+    prevValue = value
+  go trough stored contours
+    simplifyContour
+  find move paths...
+}
+
+followContour(startPoint) {
+  points = [] // new contour points array
+  point = startPoint
+  do {
+    go clockwise trough neighbors (starting at east side) {
+      if neighborColor == foregroundColor {
+        point = neighborPoint
+ 		 	  points += point
+	  	}
+    }
+  } while(point != startPoint)
+  closeContour(points)
+}
+
+closeContour(points) {
+  store points
+}
