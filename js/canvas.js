@@ -9,27 +9,28 @@
       this.elem.id = id;
       this.elem.width = this.width;
       this.elem.height = this.height;
-      document.body.insertBefore(this.elem, document.body.firstChild);
     }
     this.ctx = this.elem.getContext('2d');
     this.origImg = {};
   }
 
   Canvas.prototype.loadImg = function(img, sx, sy, w, y) {
-    var that = this;
-    var usrImg = new Image();
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      var usrImg = new Image();
 
-    usrImg.onload = function() {
-      if (usrImg.width !== that.width || usrImg.height !== that.height) {
-        that.width = usrImg.width;
-        that.height = usrImg.height;
-        that.elem.width = that.width;
-        that.elem.height = that.height;
-      }
-      that.ctx.drawImage(usrImg, sx || 0, sy || 0, w, y);
-      that.origImg.imgData = that.ctx.getImageData(0, 0, that.width, that.height);
-    };
-    usrImg.src = img;
+      usrImg.onload = function() {
+        self.width = w || usrImg.width;
+        self.height = y || usrImg.height;
+        self.elem.width = self.width;
+        self.elem.height = self.height;
+        self.ctx.drawImage(usrImg, sx || 0, sy || 0, self.width, self.height);
+        self.origImg.imgData = self.ctx.getImageData(0, 0, self.width, self.height);
+        resolve();
+      };
+
+      usrImg.src = img;
+    });
   };
 
   Canvas.prototype.runImg = function(size, fn) {
@@ -92,6 +93,10 @@
       a: imgData.data[start+3]
     }
   }
+
+  Canvas.prototype.getCanvas = function() {
+    return this.elem;
+  };
 
   exports.Canvas = Canvas;
 }(this));
