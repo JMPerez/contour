@@ -1,6 +1,5 @@
 (function() {
   var image;
-  var imageCtx;
   var contourFinder;
   var startTime = 0;
   var maxResolution = 200;
@@ -8,16 +7,20 @@
   var resultWidth;
   var resultHeight;
 
+  var imageWidth;
+
   var filters,
       canny,
       canvas;
 
   image = document.getElementById('image');
-  imageCtx = image.getContext('2d');
 
+  var dropAreaElement = document.querySelector('.main');
   var imageProvider = new ImageProvider({
-    element: document.getElementById('droparea'),
+    element: dropAreaElement,
     onImageRead: function(image) {
+      dropAreaElement.classList.add('dropped');
+      imageWidth = image.width;
       if (image.width > image.height) {
         resultWidth = Math.min(image.width, maxResolution);
         resultHeight = parseInt(resultWidth * image.height / image.width, 10);
@@ -72,32 +75,19 @@
     var secs = (Date.now() - startTime) / 1000;
     console.log('Finding contours took ' + secs + 's');
 
-    imageCtx.clearRect(0, 0, resultWidth, resultHeight);
-
     drawContours();
   }
-
 
   function drawContours() {
     for (var i = 0; i < contourFinder.allContours.length; i++) {
       console.log('contour #' + i + ' length: ' + contourFinder.allContours[i].length);
-      imageCtx.strokeStyle = '#' + Math.floor(Math.random() * 16777215).toString(16);
       drawContour(i);
     }
     animate();
-
   }
 
   function drawContour(index) {
     var points = contourFinder.allContours[index];
-
-    imageCtx.beginPath();
-    imageCtx.moveTo(points[0].x, points[0].y);
-    for (var i = 0; i < points.length; i++) {
-      imageCtx.lineTo(points[i].x, points[i].y);
-    }
-    imageCtx.stroke();
-    imageCtx.closePath();
 
     var pointsString = '';
     for (var i = 0; i < points.length; i+= 2) {
@@ -113,8 +103,10 @@
     polyline.setAttributeNS(null, 'stroke-dashoffset', 0);
     polyline.setAttributeNS(null, 'fill', 'none');
 
-    document.querySelector('#svg2').appendChild(polyline);
-document.querySelector('#svg2').setAttribute('viewBox', '0 0 ' + resultWidth + ' ' + resultHeight);
+    var svg = document.querySelector('#svg2');
+    svg.appendChild(polyline);
+    svg.setAttribute('viewBox', '0 0 ' + resultWidth + ' ' + resultHeight);
+    svg.setAttribute('style', 'width:' + imageWidth + 'px');
   }
 
   function animate() {

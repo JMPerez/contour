@@ -1,212 +1,31 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Contour finder</title>
-<link rel="stylesheet" href="css/normalize.css">
-<link rel="stylesheet" href="css/styles.css">
-<script src="js/jquery-1.10.1.min.js" type="text/javascript"></script>
-<script src="js/pixel.js" type="text/javascript"></script>
-<script src="js/canvas.js" type="text/javascript"></script>
-<script src="js/canny.js" type="text/javascript"></script>
-<script src="js/helpers.js" type="text/javascript"></script>
-<script src="js/filters.js" type="text/javascript"></script>
-<script src="js/contour.js" type="text/javascript"></script>
-<script>
-
-  var image;
-  var imageCtx;
-  var logo
-  var foregroudColor = 255;
-  var backgroundColor = 0;
-  //var threshold = 160; //doodle3D logo
-  var threshold = 62; //arcade
-  //var threshold = 120; //circus
-  var contourFinder = new ContourFinder();
-  var startTime = 0;
-  var currentContour = 0;
-
-  var maxResolution = 200,
-      currentWidth,
-      currentHeight;
-
-  var filters,
-      canny,
-      canvas;
-
-  var ImageProvider = function(options) {
-    this._options = options;
-  };
-
-  ImageProvider.prototype.init = function() {
-    var a = document.getElementById('droparea');
-    a.addEventListener('drop', this._handleDrop.bind(this), false);
-    a.addEventListener('dragover', this._fileDragHover.bind(this), false);
-  };
-
-    // file drag hover
-  ImageProvider.prototype._fileDragHover = function(e) {
-    e.stopPropagation();
-    e.preventDefault();
-  };
-
-  ImageProvider.prototype._handleDrop = function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    this._readDataFile(e.dataTransfer.files[0])
-  };
-
-  ImageProvider.prototype._readDataFile = function(e) {
-    var self = this;
-    var a = new FileReader();
-    a.onloadend = function(f) {
-      var resultImage = new Image();
-      resultImage.id = 'result';
-      resultImage.src = a.result;
-      self._options.onImageRead(resultImage);
-    };
-    a.readAsDataURL(e);
-  };
-
-  $(document).ready(function() {
-    image = document.getElementById('image');
-    imageCtx = image.getContext('2d');
-
-    var imageProvider = new ImageProvider({
-      onImageRead: function(image) {
-        currentWidth = maxResolution;
-        currentHeight = maxResolution;
-
-        if (image.width > image.height) {
-          currentWidth = Math.min(image.width, maxResolution);
-          currentHeight = parseInt(currentWidth * image.height / image.width, 10);
-        } else {
-          currentHeight = Math.min(image.height, maxResolution);
-          currentWidth = parseInt(currentHeight * image.width / image.height, 10);
-        }
-        canvas = new Canvas('canvas', currentWidth, currentHeight);
-        canny = new Canny(canvas);
-        filters = new Filters(canvas);
-
-        canvas.loadImg(image.src, 0, 0, currentWidth, currentHeight);
-
-        image.style.opacity = 0;
-        document.querySelector('.container')
-          .appendChild(image);
-
-        setTimeout(onClick, 2000);
-      }
-    });
-
-    imageProvider.init();
-  });
-
-
-  function onClick() {
-    startTime = Date.now();
-
-    canvas.setImgData(filters.grayscale());
-    canvas.setImgData(filters.gaussianBlur(5, 1));
-
-    canvas.setImgData(canny.gradient('sobel'));
-    canvas.setImgData(canny.nonMaximumSuppress());
-    canvas.setImgData(canny.hysteresis());
-
-    // ToDo: try edge detection filter
-    // ToDo: preprocess: threshold
-    contourFinder.init(document.querySelector('canvas'));
-    contourFinder.findContours();
-
-    console.log("contourFinder.allContours.length): " + contourFinder.allContours.length);
-    var secs = (Date.now() - startTime) / 1000;
-    console.log("Finding contours took " + secs + "s");
-
-    imageCtx.clearRect(0, 0, image.width, image.height);
-
-    drawContours();
-
-    // console.log(contourFinder.getPoints());
-  }
-
-
-  function drawContours() {
-
-    for (var i = 0; i < contourFinder.allContours.length; i++) {
-      console.log("contour #" + i + " length: " + contourFinder.allContours[i].length);
-      imageCtx.strokeStyle = '#' + Math.floor(Math.random() * 16777215).toString(16);
-      drawContour(i);
-    }
-    animate();
-
-  }
-
-  function drawContour(index) {
-    var points = contourFinder.allContours[index];
-
-    imageCtx.beginPath();
-    imageCtx.moveTo(points[0].x, points[0].y);
-    for (var i = 0; i < points.length; i++) {
-      imageCtx.lineTo(points[i].x, points[i].y);
-    }
-    imageCtx.stroke();
-    imageCtx.closePath();
-
-    var pointsString = '';
-    for (var i = 0; i < points.length; i+= 2) {
-      pointsString += (points[i].x + 1) + ',' + points[i].y + '  ';
-    }
-
-
-    var polyline = document.createElementNS("http://www.w3.org/2000/svg","polyline");
-    polyline.setAttributeNS(null, "points", pointsString.trim());
-    polyline.setAttributeNS(null, "stroke", "#ffffff");
-    polyline.setAttributeNS(null, "stroke-width", 1);
-    polyline.setAttributeNS(null, "stroke-linecap", "round");
-    polyline.setAttributeNS(null, "opacity", 1);
-    polyline.setAttributeNS(null, "stroke-dashoffset", 0);
-    polyline.setAttributeNS(null, "fill", "none");
-
-    document.querySelector('#svg2').appendChild(polyline);
-document.querySelector('#svg2').setAttribute('viewBox', '0 0 ' + currentWidth + ' ' + currentHeight);
-  }
-
-  function animate() {
-    var polylines = document.querySelectorAll('#svg2 polyline');
-    [].forEach.call(polylines, function(polyline, index) {
-      var length = contourFinder.allContours[index].length;// polyline.getTotalLength();
-      // Clear any previous transition
-      polyline.style.transition = polyline.style.WebkitTransition =
-        'none';
-
-      // Set up the starting positions
-      polyline.style.strokeDasharray = length + ' ' + length;
-      polyline.style.strokeDashoffset = length;
-      // Trigger a layout so styles are calculated & the browser
-      // picks up the starting position before animating
-      polyline.getBoundingClientRect();
-      // Define our transition
-      polyline.style.transition = polyline.style.WebkitTransition =
-        'stroke-dashoffset 2s linear';
-      // Go!
-      polyline.style.strokeDashoffset = '0';
-    });
-
-    setTimeout(function() {
-      document.querySelector('.container img').style.opacity = 1;
-    }, 3000);
-  }
-
-
-</script>
+  <meta charset="utf-8">
+  <title>Contour finder</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <div id="droparea">Drop image to start paint</div>
-  <canvas id="image" width="64" height="64"></canvas>
-  <br/>
+  <header>
+    contour
+  </header>
+  <div class="main">
+    <div id="droparea">Drop image to start paint</div>
+  </div>
   <div class="container">
     <svg id="svg2" xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 63 63">
     </svg>
   </div>
+  <script src="js/pixel.js"></script>
+  <script src="js/canvas.js"></script>
+  <script src="js/canny.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/jquery-1.10.1.min.js"></script>
+  <script src="js/contour.js"></script>
+  <script src="js/image-provider.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

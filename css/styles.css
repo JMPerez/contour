@@ -1,33 +1,61 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   background-color: #333;
 }
 
+header {
+  background-color: #455a64;
+  padding: 10px 20px;
+  font-size: 20px;
+  color: #fff;
+}
+
+.main {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
 
 path{
   -webkit-transition: stroke-dashoffset 2s ease-in-out;
   transition: stroke-dashoffset 2s ease-in-out;
 }
 
+.main.dropped {
+  opacity: 0;
+}
 #droparea {
-  padding: 20px;
-  background-color: #eee;
+  margin: 20px auto;
+  width: 80%;
+  padding: 50px;
+  text-align: center;
+  border: 10px solid #eee;
+  color: #fff;
+  border-radius: 5px;
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
 }
 
 .container {
   position: relative;
-  display: inline-block;
+  text-align: center;
 }
 
 .container svg {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: auto;
+  max-width: 100%;
 }
 
 .container img {
   transition: opacity 1s ease-in-out;
+  max-width: 100%;
 }
 
 #image {
