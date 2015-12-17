@@ -2,7 +2,7 @@
   var image;
   var contourFinder;
   var startTime = 0;
-  var maxResolution = 200;
+  var maxResolution = 400;
 
   var resultWidth;
   var resultHeight;
@@ -87,11 +87,11 @@
   }
 
   function drawContour(index) {
-    var points = contourFinder.allContours[index];
+    var points = contourFinder.allContours[index].points;
 
     var pointsString = '';
-    for (var i = 0; i < points.length; i+= 2) {
-      pointsString += (points[i].x + 1) + ',' + points[i].y + '  ';
+    for (var i = 0; i < points.length; i++) {
+      pointsString += (points[i].x) + ',' + points[i].y + '  ';
     }
 
     var polyline = document.createElementNS('http://www.w3.org/2000/svg','polyline');

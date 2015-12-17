@@ -54,9 +54,9 @@ function ContourFinder() {
 				if (pix.r === 255) {
 					// white, unseen
 
-					var points = this.followContour({ x: x, y: y });
-					if (points !== null) {
-						this.allContours.push(points);
+					var contour = this.followContour({ x: x, y: y });
+					if (contour !== null) {
+						this.allContours.push(contour);
 					}
 				}
 			}
@@ -79,6 +79,7 @@ function ContourFinder() {
 
 		var points = []; // start new contour
 		points.push(startPoint);
+		var length = 1;
 
 		this.markAsSeen(startPoint);
 
@@ -88,18 +89,22 @@ function ContourFinder() {
 		var point = startPoint;
 
 		var neighborhood = [
-	    { xd: -1, yd:  0}, // west
 	    { xd: -1, yd: -1}, // north-west
+			{ xd: -1, yd:  1},  // south-west
+			{ xd:  1, yd: -1}, // north-east
+			{ xd:  1, yd:  1}, // south-east
+			{ xd: -1, yd:  0}, // west
 	    { xd:  0, yd: -1}, // north
-	    { xd:  1, yd: -1}, // north-east
-	    { xd:  1, yd:  0}, // east
-	    { xd:  1, yd:  1}, // south-east
-	    { xd:  0, yd:  1}, // south
-	    { xd: -1, yd:  1}  // south-west
+			{ xd:  0, yd:  1}, // south
+	    { xd:  1, yd:  0} // east
 		];
 
 		var tmpPoint = {x: point.x, y: point.y};
 		var i = 0;
+
+		var lastDirection = null;
+		var pointsInLastDirection = 0;
+
 		while (i < neighborhood.length) {
 			tmpPoint.x = point.x + neighborhood[i].xd;
 			tmpPoint.y = point.y + neighborhood[i].yd;
@@ -107,28 +112,33 @@ function ContourFinder() {
 				tmpPoint.x < w && tmpPoint.y < h &&
 				!(tmpPoint.x === point.x && tmpPoint.y === point.y) &&
 				this.getPixel(tmpPoint.x, tmpPoint.y).r === 255) {
-				points.push(tmpPoint);
-				this.markAsSeen(tmpPoint);
+
+				if (lastDirection === i) {
+					pointsInLastDirection++;
+					if (pointsInLastDirection >= 2) {
+						points.pop();
+					}
+				} else {
+					lastDirection = i;
+					pointsInLastDirection = 1;
+				}
+
+				var pointToAdd = {x: tmpPoint.x, y: tmpPoint.y};
+				points.push(pointToAdd);
+					length++;
+				this.markAsSeen(pointToAdd);
 				point = {x: tmpPoint.x, y: tmpPoint.y};
 				i = 0;
 			} else {
-				tmpPoint = {x: point.x, y: point.y};
 				i++;
 			}
 		}
-
-		if (points.length > 5) {
-			return points;
+		if (length > 5) {
+			return {
+				points: points,
+				length: length
+			};
 		}
 		return null;
-	}
-
-	this.getPoints = function(points) {
-		var log = "";
-		for(var i=0;i<points.length;i++) {
-			var point = points[i];
-			log += point.x+","+point.y+" > ";
-		}
-		return log;
 	}
 }
