@@ -3,7 +3,7 @@ Draw an image with SVG
 
 Drag and drop an image to the drop area and you will see it "drawn" using SVG.
 
-See https://twitter.com/jmperezperez/status/665469865575260161 for an example
+See [this blog post](https://jmperezperez.com/drawing-edges-svg/) for more information on the technique.
 
 ## Libraries/Projects used to develop this
 
