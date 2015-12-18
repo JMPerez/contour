@@ -2,7 +2,7 @@
   var image;
   var contourFinder;
   var startTime = 0;
-  var maxResolution = 200;
+  var maxResolution = 400;
 
   var resultWidth;
   var resultHeight;
@@ -132,6 +132,7 @@
 
     setTimeout(function() {
       document.querySelector('.container img').style.opacity = 1;
-    }, 3000);
+      document.querySelector('.container svg').style.opacity = 0;
+    }, 2500);
   }
 })();

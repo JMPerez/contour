@@ -25,9 +25,11 @@ ImageProvider.prototype._readDataFile = function(e) {
   var a = new FileReader();
   a.onloadend = function(f) {
     var resultImage = new Image();
+    resultImage.onload = function() {
+      self._options.onImageRead(resultImage);
+    }
     resultImage.id = 'result';
     resultImage.src = a.result;
-    self._options.onImageRead(resultImage);
   };
   a.readAsDataURL(e);
 };

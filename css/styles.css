@@ -2,8 +2,27 @@
   box-sizing: border-box;
 }
 
+html {
+  font-family: sans-serif; /* 1 */
+  -ms-text-size-adjust: 100%; /* 2 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+.container {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+}
+
 body {
   background-color: #333;
+  display: table;
+  margin: 0;
 }
 
 header {
@@ -11,6 +30,7 @@ header {
   padding: 10px 20px;
   font-size: 20px;
   color: #fff;
+  position: absolute;
 }
 
 .main {
@@ -28,6 +48,7 @@ path{
 .main.dropped {
   opacity: 0;
 }
+
 #droparea {
   margin: 20px auto;
   width: 80%;
@@ -36,6 +57,7 @@ path{
   border: 10px solid #eee;
   color: #fff;
   border-radius: 5px;
+  border-style: dashed;
   position: relative;
   top: 50%;
   -webkit-transform: translateY(-50%);
@@ -49,6 +71,7 @@ path{
 }
 
 .container svg {
+  transition: opacity 1s ease-in-out;
   position: absolute;
   max-width: 100%;
 }
