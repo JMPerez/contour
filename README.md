@@ -13,4 +13,4 @@ See [this blog post](https://jmperezperez.com/drawing-edges-svg/) for more infor
 
 ## TODO
 
-- Add a slider to be able to navigate to a specific moment during the transition (something like http://codepen.io/sdras/full/JdJgrB/)
+- Add a slider to be able to navigate to a specific moment during the transition (something like http://codepen.io/sdras/full/JdJgrB/ or http://codepen.io/ihatetomatoes/pen/PPwqMN)
