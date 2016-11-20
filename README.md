@@ -1,7 +1,8 @@
-# contour
-Draw an image with SVG
+# contour - Draw an image with SVG
 
 Drag and drop an image to the drop area and you will see it "drawn" using SVG.
+
+![Demo](https://jmperezperez.com/assets/images/posts/contour.gif)
 
 See [this blog post](https://jmperezperez.com/drawing-edges-svg/) for more information on the technique.
 
