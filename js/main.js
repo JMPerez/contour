@@ -89,19 +89,74 @@
   function drawContour(index) {
     var points = contourFinder.allContours[index];
 
-    var pointsString = '';
-    for (var i = 0; i < points.length; i+= 2) {
-      pointsString += (points[i].x + 1) + ',' + points[i].y + '  ';
+    var optimizedPoints = [],
+        direction = null;
+
+    var DIRECTIONS = {
+      N: 0,
+      NE: 1,
+      E: 2,
+      SE: 3,
+      S: 4,
+      SW: 5,
+      W: 6,
+      NW: 7,
+      SAME: 8
+    };
+
+    debugger;
+    function findOutDirection(point1, point2) {
+      if (point2.x > point1.x) {
+        if (point2.y > point1.y) {
+          return DIRECTIONS.NE;
+        } else if (point2.y < point1.y) {
+          return DIRECTIONS.SE;
+        } else {
+          return DIRECTIONS.E;
+        }
+      } else if (point2.x < point1.x) {
+        if (point2.y > point1.y) {
+          return DIRECTIONS.NW;
+        } else if (point2.y < point1.y) {
+          return DIRECTIONS.SW;
+        } else {
+          return DIRECTIONS.W;
+        }
+      } else {
+        if (point2.y > point1.y) {
+          return DIRECTIONS.N;
+        } else if (point2.y < point1.y) {
+          return DIRECTIONS.S;
+        } else {
+          return DIRECTIONS.SAME;
+        }
+      }
     }
+
+    points.reduce(function(accumulator, currentValue, currentIndex, array) {
+      if (optimizedPoints.length === 0) {
+        optimizedPoints.push(currentValue);
+        return null;
+      } else {
+        var direction = findOutDirection(currentValue, array[currentIndex - 1]);
+        if (direction === DIRECTIONS.SAME) {
+          return accumulator;
+        }
+        if (direction !== accumulator) {
+          optimizedPoints.push(currentValue);
+        } else {
+          optimizedPoints[optimizedPoints.length -1] = currentValue;
+        }
+        return direction;
+      }
+    }, null);
+
+    var pointsString = optimizedPoints.map(function(point) {
+      return point.x + ',' + point.y;
+    }).join(' ');
 
     var polyline = document.createElementNS('http://www.w3.org/2000/svg','polyline');
     polyline.setAttributeNS(null, 'points', pointsString.trim());
-    polyline.setAttributeNS(null, 'stroke', '#ffffff');
-    polyline.setAttributeNS(null, 'stroke-width', 1);
-    polyline.setAttributeNS(null, 'stroke-linecap', 'round');
-    polyline.setAttributeNS(null, 'opacity', 1);
-    polyline.setAttributeNS(null, 'stroke-dashoffset', 0);
-    polyline.setAttributeNS(null, 'fill', 'none');
 
     var svg = document.querySelector('#svg2');
     svg.appendChild(polyline);

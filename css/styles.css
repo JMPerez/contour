@@ -88,3 +88,13 @@ path{
 #canvas {
   display: none;
 }
+
+/* styles for the resulting svg */
+polyline {
+  stroke: #fff;
+  stroke-width: 1;
+  stroke-linecap: round;
+  opacity: 1;
+  stroke-dashoffset: 0;
+  fill: none;
+}
