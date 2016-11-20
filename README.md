@@ -2,7 +2,7 @@
 
 Drag and drop an image to the drop area and you will see it "drawn" using SVG.
 
-<div style="text-align:center"><img src="https://jmperezperez.com/assets/images/posts/contour.gif" /></div>
+![Demo](https://jmperezperez.com/assets/images/posts/contour.gif)
 
 This project is inspired by Polygon's [Xbox One](http://www.polygon.com/a/xbox-one-review) and [PS4](http://www.polygon.com/a/ps4-review) reviews. In those pages, they animate a SVG to create a nice drawing effect.
 
