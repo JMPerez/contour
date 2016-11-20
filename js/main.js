@@ -13,6 +13,18 @@
       canny,
       canvas;
 
+  var DIRECTIONS = {
+    N: 0,
+    NE: 1,
+    E: 2,
+    SE: 3,
+    S: 4,
+    SW: 5,
+    W: 6,
+    NW: 7,
+    SAME: 8
+  };
+
   image = document.getElementById('image');
 
   var dropAreaElement = document.querySelector('.main');
@@ -78,6 +90,34 @@
     drawContours();
   }
 
+  function findOutDirection(point1, point2) {
+    if (point2.x > point1.x) {
+      if (point2.y > point1.y) {
+        return DIRECTIONS.NE;
+      } else if (point2.y < point1.y) {
+        return DIRECTIONS.SE;
+      } else {
+        return DIRECTIONS.E;
+      }
+    } else if (point2.x < point1.x) {
+      if (point2.y > point1.y) {
+        return DIRECTIONS.NW;
+      } else if (point2.y < point1.y) {
+        return DIRECTIONS.SW;
+      } else {
+        return DIRECTIONS.W;
+      }
+    } else {
+      if (point2.y > point1.y) {
+        return DIRECTIONS.N;
+      } else if (point2.y < point1.y) {
+        return DIRECTIONS.S;
+      } else {
+        return DIRECTIONS.SAME;
+      }
+    }
+  }
+
   function drawContours() {
     for (var i = 0; i < contourFinder.allContours.length; i++) {
       console.log('contour #' + i + ' length: ' + contourFinder.allContours[i].length);
@@ -91,47 +131,6 @@
 
     var optimizedPoints = [],
         direction = null;
-
-    var DIRECTIONS = {
-      N: 0,
-      NE: 1,
-      E: 2,
-      SE: 3,
-      S: 4,
-      SW: 5,
-      W: 6,
-      NW: 7,
-      SAME: 8
-    };
-
-    debugger;
-    function findOutDirection(point1, point2) {
-      if (point2.x > point1.x) {
-        if (point2.y > point1.y) {
-          return DIRECTIONS.NE;
-        } else if (point2.y < point1.y) {
-          return DIRECTIONS.SE;
-        } else {
-          return DIRECTIONS.E;
-        }
-      } else if (point2.x < point1.x) {
-        if (point2.y > point1.y) {
-          return DIRECTIONS.NW;
-        } else if (point2.y < point1.y) {
-          return DIRECTIONS.SW;
-        } else {
-          return DIRECTIONS.W;
-        }
-      } else {
-        if (point2.y > point1.y) {
-          return DIRECTIONS.N;
-        } else if (point2.y < point1.y) {
-          return DIRECTIONS.S;
-        } else {
-          return DIRECTIONS.SAME;
-        }
-      }
-    }
 
     points.reduce(function(accumulator, currentValue, currentIndex, array) {
       if (optimizedPoints.length === 0) {
