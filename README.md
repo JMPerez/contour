@@ -21,7 +21,7 @@ There are some interesting properties:
 
 ```svg
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 64 64">
-<polyline points="51,1 61,1 61,2 56,4 56,3"/>
+  <polyline points="51,1 61,1 61,2 56,4 56,3"/>
   <polyline points="52,1 50,2 51,3 50,4 50,9 46,10 46,8 48,8 48,9"/>
   <polyline points="61,4 61,5 58,6"/>
   <polyline points="19,5 25,5 26,6 27,6 27,7 28,8 29,8 29,12 28,13 28,18"/>
