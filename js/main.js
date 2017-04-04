@@ -28,47 +28,62 @@
   image = document.getElementById('image');
 
   var dropAreaElement = document.querySelector('.main');
-  var imageProvider = new ImageProvider({
-    element: dropAreaElement,
-    onImageRead: function(image) {
+
+  var files = [
+    'albums/avicii-true.jpg',
+    'albums/cold-play-ghost-stories.jpg',
+    'albums/daft-punk-ram.jpg',
+    'albums/kanye-west-yeezus.jpg',
+    'albums/michael-jackson-bad.jpg',
+    'albums/nirvana-nevermind.jpg',
+    'albums/the-xx-coexist.jpg'
+  ];
+
+  var currentIndex = 0;
+
+  function nextFile() {
+    if (currentIndex < files.length) {
+      var file = files[currentIndex];
       dropAreaElement.classList.add('dropped');
-      imageWidth = image.width;
-      if (image.width > image.height) {
-        resultWidth = Math.min(image.width, maxResolution);
-        resultHeight = parseInt(resultWidth * image.height / image.width, 10);
-      } else {
-        resultHeight = Math.min(image.height, maxResolution);
-        resultWidth = parseInt(resultHeight * image.width / image.height, 10);
-      }
-      contourFinder = new ContourFinder();
-      canvas = new Canvas('canvas', resultWidth, resultHeight);
-      canny = new Canny(canvas);
-      filters = new Filters(canvas);
-
-      image.style.opacity = 0;
-
-      // delete previous images
-      var prev = document.querySelector('.container img');
-      if (prev) {
-        prev.parentNode.removeChild(prev);
-      }
-
-      var polylines = document.querySelectorAll('#svg2 polyline');
-      if (polylines.length) {
-        for (var i = 0; i < polylines.length; i++) {
-          polylines[i].parentNode.removeChild(polylines[i]);
+      var image = new Image();
+      image.src = file;
+      image.addEventListener('load', function() {
+        imageWidth = image.width;
+        if (image.width > image.height) {
+          resultWidth = Math.min(image.width, maxResolution);
+          resultHeight = parseInt(resultWidth * image.height / image.width, 10);
+        } else {
+          resultHeight = Math.min(image.height, maxResolution);
+          resultWidth = parseInt(resultHeight * image.width / image.height, 10);
         }
+
+        contourFinder = new ContourFinder();
+        canvas = new Canvas('canvas', resultWidth, resultHeight);
+        canny = new Canny(canvas);
+        filters = new Filters(canvas);
+
+        image.style.opacity = 0;
+
+        // delete previous images
+        var prev = document.querySelector('.container img');
+        if (prev) {
+          prev.parentNode.removeChild(prev);
+        }
+
+        var polylines = document.querySelectorAll('#svg2 polyline');
+        if (polylines.length) {
+          for (var i = 0; i < polylines.length; i++) {
+            polylines[i].parentNode.removeChild(polylines[i]);
+          }
+        }
+
+        document.querySelector('.container')
+          .appendChild(image);
+
+        canvas.loadImg(image.src, 0, 0, resultWidth, resultHeight).then(process);
+        });
       }
-
-      document.querySelector('.container')
-        .appendChild(image);
-
-      canvas.loadImg(image.src, 0, 0, resultWidth, resultHeight).then(process);
-    }
-  });
-
-  imageProvider.init();
-
+  }
 
   function process() {
     startTime = Date.now();
@@ -187,6 +202,13 @@
     setTimeout(function() {
       document.querySelector('.container img').style.opacity = 1;
       document.querySelector('.container svg').style.opacity = 0;
+      setTimeout(function() {
+        document.querySelector('.container img').style.opacity = 0;
+        currentIndex++;
+        nextFile();
+      }, 2000);
     }, 2500);
   }
+
+  nextFile();
 })();
