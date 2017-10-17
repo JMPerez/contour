@@ -26,7 +26,7 @@ ImageProvider.prototype._fileDragHover = function(e) {
 ImageProvider.prototype._handleDrop = function(e) {
   e.preventDefault();
   e.stopPropagation();
-  this._readDataFile(e.target.files[0] || e.dataTransfer.files[0])
+  this._readDataFile(e.target.files && e.target.files[0] || e.dataTransfer.files[0])
 };
 
 ImageProvider.prototype._readDataFile = function(e) {
